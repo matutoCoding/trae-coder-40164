@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { View, Text, ScrollView, Input } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import classnames from 'classnames';
@@ -12,6 +12,7 @@ import type { Member } from '@/types/member';
 const RecordDetailPage: React.FC = () => {
   const recordings = useAppStore((s) => s.recordings);
   const members = useAppStore((s) => s.members);
+  const notes = useAppStore((s) => s.notes);
   const updateRecording = useAppStore((s) => s.updateRecording);
   const [recording, setRecording] = useState<Recording | null>(null);
   const [editingTitle, setEditingTitle] = useState(false);
@@ -117,6 +118,42 @@ const RecordDetailPage: React.FC = () => {
     console.info('[RecordDetail] Speaker filter changed:', activeSpeakerFilter === speakerId ? 'all' : speakerId);
   };
 
+  const recordingNotes = useMemo(
+    () => notes.filter((n) => n.recordingId === recording?.id),
+    [notes, recording?.id]
+  );
+
+  const summaryItems = useMemo(() => {
+    if (!recording) return [];
+    return uniqueSpeakers.map((seg, idx) => {
+      const member = getMemberForSpeaker(seg.speakerId);
+      const note = recordingNotes.find((n) => n.speakerId === seg.speakerId);
+      const alias = seg.speakerLabel;
+      const displayName = member ? `${member.name}（${alias}）` : alias;
+      const color = member?.color || getSpeakerColor(idx);
+      const viewpointCount = note?.viewpoints.length || 0;
+      const questionCount = note?.questions.length || 0;
+      const quoteCount = note?.quotes.length || 0;
+      return {
+        speakerId: seg.speakerId,
+        displayName,
+        color,
+        noteId: note?.id,
+        viewpointCount,
+        questionCount,
+        quoteCount,
+      };
+    });
+  }, [uniqueSpeakers, recordingNotes, recording, members]);
+
+  const handleOpenNote = (noteId?: string) => {
+    if (noteId) {
+      Taro.navigateTo({ url: `/pages/noteDetail/index?id=${noteId}` });
+    } else {
+      Taro.showToast({ title: '暂无对应笔记', icon: 'none' });
+    }
+  };
+
   return (
     <View className={styles.container}>
       <View className={styles.header}>
@@ -163,6 +200,52 @@ const RecordDetailPage: React.FC = () => {
         <View className={styles.processingCard}>
           <View className={styles.processingDot} />
           <Text className={styles.processingText}>声纹分离中，请稍候...</Text>
+        </View>
+      )}
+
+      {recording.status === 'completed' && (
+        <View className={styles.summarySection}>
+          <Text className={styles.summaryTitle}>纪要总览</Text>
+          <View className={styles.summaryList}>
+            {summaryItems.map((item) => (
+              <View
+                key={item.speakerId}
+                className={styles.summaryItem}
+                onClick={() => handleOpenNote(item.noteId)}
+              >
+                <View
+                  className={styles.summaryDot}
+                  style={{ backgroundColor: item.color }}
+                />
+                <View className={styles.summaryInfo}>
+                  <Text className={styles.summaryName} numberOfLines={1}>
+                    {item.displayName}
+                  </Text>
+                  <View className={styles.summaryStats}>
+                    <View className={styles.summaryStat}>
+                      <Text className={styles.summaryStatNum}>
+                        {item.viewpointCount}
+                      </Text>
+                      <Text className={styles.summaryStatLabel}>观点</Text>
+                    </View>
+                    <View className={styles.summaryStat}>
+                      <Text className={styles.summaryStatNum}>
+                        {item.questionCount}
+                      </Text>
+                      <Text className={styles.summaryStatLabel}>问题</Text>
+                    </View>
+                    <View className={styles.summaryStat}>
+                      <Text className={styles.summaryStatNum}>
+                        {item.quoteCount}
+                      </Text>
+                      <Text className={styles.summaryStatLabel}>引用</Text>
+                    </View>
+                  </View>
+                </View>
+                <Text className={styles.summaryArrow}>›</Text>
+              </View>
+            ))}
+          </View>
         </View>
       )}
 

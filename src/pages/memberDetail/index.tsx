@@ -104,6 +104,25 @@ const MemberDetailPage: React.FC = () => {
     );
   }
 
+  const totalRecordings = recordingEntries.length;
+  const totalSpeakDuration = recordingEntries.reduce(
+    (sum, e) => sum + e.totalDuration,
+    0
+  );
+  const latestRecording = recordingEntries[0]?.recording;
+  const latestSpeakDate = latestRecording?.createdAt || '暂无';
+
+  const totalViewpoints = recordingEntries.reduce(
+    (sum, e) =>
+      sum + e.notes.reduce((s, n) => s + n.viewpoints.length, 0),
+    0
+  );
+  const totalQuestions = recordingEntries.reduce(
+    (sum, e) =>
+      sum + e.notes.reduce((s, n) => s + n.questions.length, 0),
+    0
+  );
+
   const handleDelete = () => {
     Taro.showModal({
       title: '确认删除',
@@ -160,6 +179,37 @@ const MemberDetailPage: React.FC = () => {
       </View>
 
       <ScrollView scrollY className={styles.content}>
+        <View className={styles.statsSection}>
+          <View className={styles.statCard}>
+            <Text className={styles.statNum}>{totalRecordings}</Text>
+            <Text className={styles.statLabel}>参与录音</Text>
+          </View>
+          <View className={styles.statCard}>
+            <Text className={styles.statNum}>
+              {Math.floor(totalSpeakDuration / 60)}
+            </Text>
+            <Text className={styles.statLabel}>总时长(分)</Text>
+          </View>
+          <View className={styles.statCard}>
+            <Text className={styles.statNum}>{totalViewpoints}</Text>
+            <Text className={styles.statLabel}>观点数</Text>
+          </View>
+          <View className={styles.statCard}>
+            <Text className={styles.statNum}>{totalQuestions}</Text>
+            <Text className={styles.statLabel}>问题数</Text>
+          </View>
+        </View>
+
+        {latestRecording && (
+          <View className={styles.latestCard}>
+            <Text className={styles.latestLabel}>最近一次发言</Text>
+            <Text className={styles.latestTitle} numberOfLines={1}>
+              {latestRecording.title}
+            </Text>
+            <Text className={styles.latestDate}>{latestRecording.createdAt}</Text>
+          </View>
+        )}
+
         <View className={styles.section}>
           <View className={styles.sectionHeader}>
             <Text className={styles.sectionTitle}>个人声纹</Text>
@@ -266,6 +316,29 @@ const MemberDetailPage: React.FC = () => {
                     <Text className={styles.recordingSpeaker}>
                       发言人：{entry.latestSpeakerLabel}
                     </Text>
+                  )}
+                  {entry.notes.length > 0 && (
+                    <View className={styles.recordingViewpoints}>
+                      <Text className={styles.recordingViewpointsTitle}>
+                        主要观点
+                      </Text>
+                      {entry.notes
+                        .flatMap((n) => n.viewpoints)
+                        .slice(0, 3)
+                        .map((vp, i) => (
+                          <View className={styles.viewpointItem} key={i}>
+                            <Text className={styles.viewpointBullet}>·</Text>
+                            <Text className={styles.viewpointText} numberOfLines={2}>
+                              {vp}
+                            </Text>
+                          </View>
+                        ))}
+                      {entry.notes.flatMap((n) => n.viewpoints).length > 3 && (
+                        <Text className={styles.viewpointMore}>
+                          还有 {entry.notes.flatMap((n) => n.viewpoints).length - 3} 条观点
+                        </Text>
+                      )}
+                    </View>
                   )}
                   <View className={styles.recordingActions}>
                     <View
