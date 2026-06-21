@@ -17,10 +17,13 @@ const NotesPage: React.FC = () => {
 
   const getDynamicNoteDisplay = (note: NoteItem) => {
     const member = members.find((m) => m.voiceprintIds.includes(note.speakerId));
-    const recording = recordings.find((r) => r.id === note.recordingId));
-    const latestSpeakerLabel = recording?.segments.find((s) => s.speakerId === note.speakerId)?.speakerLabel;
+    const recording = recordings.find((r) => r.id === note.recordingId);
+    const latestSpeakerLabel = recording?.segments.find(
+      (s) => s.speakerId === note.speakerId
+    )?.speakerLabel;
     return {
-      displayName: member?.name || latestSpeakerLabel || note.memberName || note.speakerId,
+      displayName:
+        member?.name || latestSpeakerLabel || note.memberName || note.speakerId,
       displayTitle: recording?.title || note.recordingTitle,
     };
   };
@@ -48,14 +51,13 @@ const NotesPage: React.FC = () => {
       if (note.questions.some((q) => q.toLowerCase().includes(kw))) return true;
       if (note.quotes.some((q) => q.text.toLowerCase().includes(kw))) return true;
       return false;
-    };
+    });
   }, [notes, activeFilter, searchKeyword, recordings, members]);
 
   const hasSearch = searchKeyword.trim().length > 0;
 
   const handleFilterClick = (title: string) => {
     setActiveFilter(title);
-    console.info('[Notes] Filter changed:', title);
   };
 
   const handleNoteClick = (note: NoteItem) => {
@@ -86,8 +88,9 @@ const NotesPage: React.FC = () => {
           />
           {hasSearch && (
             <Text className={styles.searchClear} onClick={handleClearSearch}>
+              ✕
             </Text>
-          );
+          )}
         </View>
         {hasSearch && (
           <Text className={styles.searchResultTip}>
@@ -103,11 +106,17 @@ const NotesPage: React.FC = () => {
             {recordingTitles.map((title) => (
               <View
                 key={title}
-                className={classnames(styles.filterItem, activeFilter === title && styles.filterItemActive)}
+                className={classnames(
+                  styles.filterItem,
+                  activeFilter === title && styles.filterItemActive
+                )}
                 onClick={() => handleFilterClick(title)}
               >
                 <Text
-                  className={classnames(styles.filterText, activeFilter === title && styles.filterTextActive)}
+                  className={classnames(
+                    styles.filterText,
+                    activeFilter === title && styles.filterTextActive
+                  )}
                 >
                   {title === 'all' ? '全部' : title}
                 </Text>
@@ -124,7 +133,14 @@ const NotesPage: React.FC = () => {
           ))}
         </ScrollView>
       ) : (
-        <EmptyState icon="📝" message={hasSearch ? '未找到相关内容' : '还没有笔记，完成录音后自动生成'} />
+        <EmptyState
+          icon="📝"
+          message={
+            hasSearch
+              ? '未找到相关内容'
+              : '还没有笔记，完成录音后自动生成'
+          }
+        />
       )}
     </View>
   );

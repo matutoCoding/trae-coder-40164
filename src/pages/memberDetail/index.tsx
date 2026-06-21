@@ -72,11 +72,13 @@ const MemberDetailPage: React.FC = () => {
           const relatedNotes = notes.filter(
             (n) =>
               n.recordingId === rec.id &&
-              member!.voiceprintIds.includes(n.speakerId));
+              member.voiceprintIds.includes(n.speakerId)
+          );
           const latestLabel =
-            rec.segments.find((s) => s.speakerId === spk)?.speakerLabel || spk;
+            rec.segments.find((s) => s.speakerId === spk)?.speakerLabel ||
+            spk;
           const duration = rec.segments
-            .filter((s) => member!.voiceprintIds.includes(s.speakerId))
+            .filter((s) => member.voiceprintIds.includes(s.speakerId))
             .reduce((sum, s) => sum + (s.endTime - s.startTime), 0);
           map.set(rec.id, {
             recording: rec,
@@ -89,7 +91,8 @@ const MemberDetailPage: React.FC = () => {
     });
     return Array.from(map.values()).sort(
       (a, b) =>
-        new Date(b.recording.createdAt).getTime() - new Date(a.recording.createdAt).getTime()
+        new Date(b.recording.createdAt).getTime() -
+        new Date(a.recording.createdAt).getTime()
     );
   }, [member, recordings, notes]);
 
@@ -139,7 +142,10 @@ const MemberDetailPage: React.FC = () => {
   return (
     <View className={styles.container}>
       <View className={styles.header}>
-        <View className={styles.avatarWrap} style={{ backgroundColor: member.color }}>
+        <View
+          className={styles.avatarWrap}
+          style={{ backgroundColor: member.color }}
+        >
           {member.avatar ? (
             <Image className={styles.avatar} src={member.avatar} mode="aspectFill" />
           ) : (
@@ -157,31 +163,50 @@ const MemberDetailPage: React.FC = () => {
         <View className={styles.section}>
           <View className={styles.sectionHeader}>
             <Text className={styles.sectionTitle}>个人声纹</Text>
-            <Text className={styles.sectionCount}>{member.voiceprintIds.length} 条已识别</Text>
+            <Text className={styles.sectionCount}>
+              {member.voiceprintIds.length} 条已识别
+            </Text>
           </View>
           {voiceprintEntries.length > 0 ? (
             <View className={styles.voiceprintList}>
               {voiceprintEntries.map((vp) => (
-                <View className={styles.voiceprintItem} key={`${vp.speakerId}_${vp.recordingId}`}>
+                <View
+                  className={styles.voiceprintItem}
+                  key={`${vp.speakerId}_${vp.recordingId}`}
+                >
                   <View
-                  className={styles.voiceprintDot}
-                  style={{ backgroundColor: member.color }}
-                />
-                <View className={styles.voiceprintInfo}>
-                  <Text className={styles.voiceprintLabel}>{vp.speakerLabel}</Text>
-                  <Text className={styles.voiceprintSource}>
-                    来源：{vp.recordingTitle}</Text>
+                    className={styles.voiceprintDot}
+                    style={{ backgroundColor: member.color }}
+                  />
+                  <View className={styles.voiceprintInfo}>
+                    <Text className={styles.voiceprintLabel}>
+                      {vp.speakerLabel}
+                    </Text>
+                    <Text className={styles.voiceprintSource}>
+                      来源：{vp.recordingTitle}
+                    </Text>
                   </View>
+                  <Text
+                    className={styles.unbindBtn}
+                    onClick={() =>
+                      handleUnbindVoiceprint(vp.speakerId, vp.speakerLabel)
+                    }
+                  >
+                    解绑
+                  </Text>
                 </View>
-              </View>
+              ))}
               {member.voiceprintIds.length > voiceprintEntries.length && (
                 <Text className={styles.voiceprintNote}>
-                  * 部分声纹暂无录音记录</Text>
+                  * 部分声纹暂无录音记录
+                </Text>
               )}
             </View>
           ) : (
             <View className={styles.emptyBlock}>
-              <Text className={styles.emptyText}>还没有声纹，请在成员页分配发言人</Text>
+              <Text className={styles.emptyText}>
+                还没有声纹，请在成员页分配发言人
+              </Text>
             </View>
           )}
         </View>
@@ -189,7 +214,9 @@ const MemberDetailPage: React.FC = () => {
         <View className={styles.section}>
           <View className={styles.sectionHeader}>
             <Text className={styles.sectionTitle}>参与录音</Text>
-            <Text className={styles.sectionCount}>{recordingEntries.length} 条记录</Text>
+            <Text className={styles.sectionCount}>
+              {recordingEntries.length} 条记录
+            </Text>
           </View>
           {recordingEntries.length > 0 ? (
             <View className={styles.recordingList}>
@@ -207,22 +234,31 @@ const MemberDetailPage: React.FC = () => {
                       className={styles.recordingTag}
                       style={{
                         backgroundColor:
-                        entry.recording.type === 'live'
-                          ? 'rgba(13, 148, 136, 0.08)'
-                          : 'rgba(99, 102, 241, 0.08)',
-                        color:
-                          entry.recording.type === 'live' ? '#0D9488' : '#6366F1',
+                          entry.recording.type === 'live'
+                            ? 'rgba(13, 148, 136, 0.08)'
+                            : 'rgba(99, 102, 241, 0.08)',
                       }}
                     >
-                      <Text className={styles.recordingTagText}>
-                        {entry.recording.type === 'live' ? '现场录音' : '文件导入'}
+                      <Text
+                        className={styles.recordingTagText}
+                        style={{
+                          color:
+                            entry.recording.type === 'live'
+                              ? '#0D9488'
+                              : '#6366F1',
+                        }}
+                      >
+                        {entry.recording.type === 'live'
+                          ? '现场录音'
+                          : '文件导入'}
                       </Text>
                     </View>
                   </View>
                   <View className={styles.recordingMeta}>
                     <Text className={styles.recordingMetaText}>
-                      发言时长：{formatDuration(entry.totalDuration)}</Text>
-                      <Text className={styles.recordingMetaText}>
+                      发言时长：{formatDuration(entry.totalDuration)}
+                    </Text>
+                    <Text className={styles.recordingMetaText}>
                       {entry.recording.createdAt}
                     </Text>
                   </View>
@@ -239,23 +275,26 @@ const MemberDetailPage: React.FC = () => {
                         handleOpenRecording(entry.recording.id);
                       }}
                     >
-                      <Text className={styles.recordingActionText}>查看录音</Text>
+                      <Text className={styles.recordingActionText}>
+                        查看录音
+                      </Text>
                     </View>
                     {entry.notes.length > 0 && (
                       <View
                         className={styles.recordingActionBtnPrimary}
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (entry.notes[0] && handleOpenNote(entry.notes[0].id));
+                          handleOpenNote(entry.notes[0].id);
                         }}
                       >
                         <Text className={styles.recordingActionTextPrimary}>
                           查看笔记 ({entry.notes.length})
                         </Text>
                       </View>
+                    )}
                   </View>
                 </View>
-              </View>
+              ))}
             </View>
           ) : (
             <View className={styles.emptyBlock}>
