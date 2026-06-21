@@ -1,0 +1,74 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, rgba($color-primary, 0.06) 0%, $color-bg-page 100%);
+  padding: 0 $page-padding;
+  padding-bottom: 120rpx;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-lg 0;
+}
+
+.topTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.filterWrap {
+  margin-bottom: $spacing-lg;
+}
+
+.filterLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-bottom: $spacing-sm;
+  display: block;
+}
+
+.filterList {
+  display: flex;
+  white-space: nowrap;
+  @include scroll-x-container;
+}
+
+.filterItem {
+  display: inline-flex;
+  padding: $spacing-xs $spacing-lg;
+  background: $color-bg-card;
+  border-radius: $radius-round;
+  margin-right: $spacing-sm;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  transition: all $transition-base;
+  white-space: nowrap;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.filterItemActive {
+  background: linear-gradient(135deg, $color-primary, $color-primary-light);
+  box-shadow: 0 4rpx 12rpx rgba($color-primary, 0.3);
+}
+
+.filterText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  white-space: nowrap;
+}
+
+.filterTextActive {
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.noteList {
+  display: flex;
+  flex-direction: column;
+}

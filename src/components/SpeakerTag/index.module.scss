@@ -1,0 +1,39 @@
+@use '@/styles/variables.scss' as *;
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 8rpx 16rpx;
+  background: $color-bg-card;
+  border-radius: $radius-round;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  margin-right: $spacing-sm;
+  margin-bottom: $spacing-sm;
+  transition: all $transition-base;
+  white-space: nowrap;
+
+  &:active {
+    opacity: 0.85;
+    transform: scale(0.96);
+  }
+}
+
+.dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  margin-right: $spacing-xs;
+  flex-shrink: 0;
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+  margin-right: $spacing-xs;
+}
+
+.name {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}

@@ -1,0 +1,22 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 32rpx;
+}
+
+.icon {
+  font-size: 80rpx;
+  margin-bottom: $spacing-lg;
+  filter: drop-shadow(0 4rpx 8rpx rgba(0, 0, 0, 0.1));
+}
+
+.message {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  line-height: $line-height-loose;
+  text-align: center;
+}

@@ -1,0 +1,192 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding: 0 $page-padding;
+  padding-bottom: 160rpx;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: $spacing-lg 0;
+}
+
+.avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: $spacing-md;
+  flex-shrink: 0;
+}
+
+.avatarText {
+  font-size: $font-size-xl;
+  color: $color-text-white;
+  font-weight: $font-weight-bold;
+}
+
+.headerInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  display: block;
+  margin-bottom: 4rpx;
+}
+
+.recording {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  display: block;
+  @include text-ellipsis;
+}
+
+.section {
+  margin-bottom: $spacing-lg;
+}
+
+.sectionCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.sectionCount {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.itemRow {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: $spacing-sm;
+}
+
+.itemDot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  margin-right: $spacing-sm;
+  margin-top: 10rpx;
+  flex-shrink: 0;
+}
+
+.itemText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+  flex: 1;
+}
+
+.quoteCard {
+  background: rgba($color-primary, 0.04);
+  border-left: 6rpx solid $color-primary;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  margin-bottom: $spacing-sm;
+}
+
+.quoteText {
+  font-size: $font-size-md;
+  color: $color-primary-dark;
+  line-height: $line-height-loose;
+  font-style: italic;
+  display: block;
+  margin-bottom: $spacing-xs;
+}
+
+.quoteTime {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.emptySection {
+  padding: $spacing-lg 0;
+  text-align: center;
+}
+
+.emptyText {
+  font-size: $font-size-sm;
+  color: $color-text-disabled;
+}
+
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: $spacing-md $spacing-lg;
+  padding-bottom: calc(#{$spacing-md} + env(safe-area-inset-bottom));
+  background: $color-bg-card;
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.06);
+  display: flex;
+  gap: $spacing-md;
+}
+
+.copyBtn {
+  flex: 1;
+  height: $button-height-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $color-bg-card;
+  border: 2rpx solid $color-border;
+  border-radius: $radius-button;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.copyBtnText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}
+
+.editBtn {
+  flex: 1;
+  height: $button-height-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $color-primary, $color-primary-light);
+  border-radius: $radius-button;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.editBtnText {
+  font-size: $font-size-md;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}

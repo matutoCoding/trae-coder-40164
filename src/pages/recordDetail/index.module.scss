@@ -1,0 +1,203 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding: 0 $page-padding;
+  padding-bottom: 160rpx;
+}
+
+.header {
+  padding: $spacing-lg 0;
+}
+
+.title {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  display: block;
+  margin-bottom: $spacing-sm;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $spacing-xs;
+}
+
+.metaTag {
+  padding: 4rpx 16rpx;
+  background: rgba($color-primary, 0.08);
+  border-radius: $radius-round;
+}
+
+.metaTagText {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  white-space: nowrap;
+}
+
+.playerSection {
+  margin-bottom: $spacing-lg;
+}
+
+.speakerSection {
+  margin-bottom: $spacing-lg;
+}
+
+.speakerTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  display: block;
+}
+
+.speakerList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.speakerItem {
+  display: flex;
+  align-items: flex-start;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.speakerDot {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  margin-right: $spacing-sm;
+  margin-top: 6rpx;
+  flex-shrink: 0;
+}
+
+.speakerContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.speakerLabel {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  display: block;
+  margin-bottom: 4rpx;
+}
+
+.speakerTime {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  display: block;
+  margin-bottom: $spacing-xs;
+}
+
+.speakerText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+  display: block;
+}
+
+.timelineSection {
+  margin-bottom: $spacing-lg;
+}
+
+.timelineTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  display: block;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.timelineItem {
+  display: flex;
+  align-items: center;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: $spacing-sm $spacing-md;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+}
+
+.timelineMarker {
+  font-size: $font-size-sm;
+  margin-right: $spacing-sm;
+  flex-shrink: 0;
+}
+
+.timelineText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  @include text-ellipsis;
+}
+
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: $spacing-md $spacing-lg;
+  padding-bottom: calc(#{$spacing-md} + env(safe-area-inset-bottom));
+  background: $color-bg-card;
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.06);
+  display: flex;
+  gap: $spacing-md;
+}
+
+.editBtn {
+  flex: 1;
+  height: $button-height-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $color-bg-card;
+  border: 2rpx solid $color-border;
+  border-radius: $radius-button;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.editBtnText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}
+
+.noteBtn {
+  flex: 1;
+  height: $button-height-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $color-primary, $color-primary-light);
+  border-radius: $radius-button;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.noteBtnText {
+  font-size: $font-size-md;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}

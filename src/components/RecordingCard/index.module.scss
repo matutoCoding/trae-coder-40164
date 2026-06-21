@@ -1,0 +1,98 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  width: 100%;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-sm;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  flex: 1;
+  @include text-ellipsis;
+}
+
+.typeBadge {
+  padding: 4rpx 16rpx;
+  border-radius: $radius-sm;
+  background: rgba($color-primary, 0.1);
+  margin-left: $spacing-sm;
+  flex-shrink: 0;
+}
+
+.typeText {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}
+
+.info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.meta {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  white-space: nowrap;
+}
+
+.dot {
+  font-size: $font-size-sm;
+  color: $color-text-disabled;
+  margin: 0 8rpx;
+}
+
+.processing {
+  display: flex;
+  align-items: center;
+  margin-top: $spacing-sm;
+}
+
+.processingDot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: $color-warning;
+  margin-right: $spacing-xs;
+  animation: blink 1.2s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.processingText {
+  font-size: $font-size-xs;
+  color: $color-warning;
+}
+
+.completed {
+  margin-top: $spacing-sm;
+}
+
+.completedText {
+  font-size: $font-size-xs;
+  color: $color-success;
+}
