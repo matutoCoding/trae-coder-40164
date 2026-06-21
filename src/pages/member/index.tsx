@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import MemberCard from '@/components/MemberCard';
 import SpeakerTag from '@/components/SpeakerTag';
 import EmptyState from '@/components/EmptyState';
-import { mockMembers } from '@/data/members';
-import { mockRecordings } from '@/data/recordings';
 import { useAppStore } from '@/store/useAppStore';
 import { getSpeakerColor } from '@/utils';
 import type { Member } from '@/types/member';
@@ -20,21 +18,10 @@ interface PendingSpeaker {
 
 const MemberPage: React.FC = () => {
   const members = useAppStore((s) => s.members);
-  const setMembers = useAppStore((s) => s.setMembers);
   const bindVoiceprint = useAppStore((s) => s.bindVoiceprint);
   const recordings = useAppStore((s) => s.recordings);
-  const setRecordings = useAppStore((s) => s.setRecordings);
   const [pendingSpeakers, setPendingSpeakers] = useState<PendingSpeaker[]>([]);
   const [selectedSpeaker, setSelectedSpeaker] = useState<PendingSpeaker | null>(null);
-  const initialized = useRef(false);
-
-  useEffect(() => {
-    if (!initialized.current) {
-      setMembers(mockMembers);
-      setRecordings(mockRecordings);
-      initialized.current = true;
-    }
-  }, []);
 
   useEffect(() => {
     const pending: PendingSpeaker[] = [];

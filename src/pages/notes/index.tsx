@@ -1,26 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import classnames from 'classnames';
 import styles from './index.module.scss';
 import NoteCard from '@/components/NoteCard';
 import EmptyState from '@/components/EmptyState';
-import { mockNotes } from '@/data/notes';
 import { useAppStore } from '@/store/useAppStore';
 import type { NoteItem } from '@/types/member';
 
 const NotesPage: React.FC = () => {
   const notes = useAppStore((s) => s.notes);
-  const setNotes = useAppStore((s) => s.setNotes);
   const [activeFilter, setActiveFilter] = useState('all');
-  const initialized = useRef(false);
-
-  useEffect(() => {
-    if (!initialized.current) {
-      setNotes(mockNotes);
-      initialized.current = true;
-    }
-  }, []);
 
   const recordingTitles = ['all', ...Array.from(new Set(notes.map((n) => n.recordingTitle)))];
 

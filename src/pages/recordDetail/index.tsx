@@ -1,15 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView } from '@tarojs/components';
+import { View, Text, ScrollView, Input } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import AudioPlayer from '@/components/AudioPlayer';
 import { useAppStore } from '@/store/useAppStore';
 import { formatDuration, getSpeakerColor } from '@/utils';
 import type { Recording } from '@/types/recording';
+import type { Member } from '@/types/member';
 
 const RecordDetailPage: React.FC = () => {
   const recordings = useAppStore((s) => s.recordings);
+  const members = useAppStore((s) => s.members);
+  const updateRecording = useAppStore((s) => s.updateRecording);
   const [recording, setRecording] = useState<Recording | null>(null);
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [titleValue, setTitleValue] = useState('');
+  const [editingSpeakerId, setEditingSpeakerId] = useState<string | null>(null);
+  const [speakerNameValue, setSpeakerNameValue] = useState('');
 
   useEffect(() => {
     const params = Taro.getCurrentInstance().router?.params;
@@ -23,6 +30,50 @@ const RecordDetailPage: React.FC = () => {
       }
     }
   }, [recordings]);
+
+  const getMemberForSpeaker = (speakerId: string): Member | undefined => {
+    return members.find((m) => m.voiceprintIds.includes(speakerId));
+  };
+
+  const getSpeakerDisplayName = (speakerId: string, speakerLabel: string): string => {
+    const member = getMemberForSpeaker(speakerId);
+    return member ? `${member.name}（${speakerLabel}）` : speakerLabel;
+  };
+
+  const handleEditTitle = () => {
+    if (recording) {
+      setTitleValue(recording.title);
+      setEditingTitle(true);
+    }
+  };
+
+  const saveTitle = () => {
+    if (recording && titleValue.trim()) {
+      updateRecording(recording.id, { title: titleValue.trim() });
+      setEditingTitle(false);
+      Taro.showToast({ title: '标题已更新', icon: 'success' });
+      console.info('[RecordDetail] Title updated:', titleValue.trim());
+    }
+  };
+
+  const handleEditSpeaker = (speakerId: string, currentLabel: string) => {
+    setEditingSpeakerId(speakerId);
+    setSpeakerNameValue(currentLabel);
+  };
+
+  const saveSpeakerName = () => {
+    if (recording && editingSpeakerId && speakerNameValue.trim()) {
+      const updatedSegments = recording.segments.map((seg) =>
+        seg.speakerId === editingSpeakerId
+          ? { ...seg, speakerLabel: speakerNameValue.trim() }
+          : seg
+      );
+      updateRecording(recording.id, { segments: updatedSegments });
+      setEditingSpeakerId(null);
+      Taro.showToast({ title: '发言人名称已更新', icon: 'success' });
+      console.info('[RecordDetail] Speaker label updated:', editingSpeakerId, '->', speakerNameValue.trim());
+    }
+  };
 
   if (!recording) {
     return (
@@ -39,7 +90,23 @@ const RecordDetailPage: React.FC = () => {
   return (
     <View className={styles.container}>
       <View className={styles.header}>
-        <Text className={styles.title}>{recording.title}</Text>
+        {editingTitle ? (
+          <View className={styles.titleEditWrap}>
+            <Input
+              className={styles.titleInput}
+              value={titleValue}
+              onInput={(e) => setTitleValue(e.detail.value)}
+              onBlur={saveTitle}
+              onConfirm={saveTitle}
+              autoFocus
+            />
+          </View>
+        ) : (
+          <Text className={styles.title} onClick={handleEditTitle}>{recording.title}</Text>
+        )}
+        {!editingTitle && (
+          <Text className={styles.editHint}>点击标题可编辑</Text>
+        )}
         <View className={styles.metaRow}>
           <View className={styles.metaTag}>
             <Text className={styles.metaTagText}>
@@ -62,26 +129,57 @@ const RecordDetailPage: React.FC = () => {
         <AudioPlayer duration={recording.duration} />
       </View>
 
-      <View className={styles.speakerSection}>
-        <Text className={styles.speakerTitle}>发言人</Text>
-        <View className={styles.speakerList}>
-          {uniqueSpeakers.map((seg, idx) => (
-            <View key={seg.speakerId} className={styles.speakerItem}>
-              <View
-                className={styles.speakerDot}
-                style={{ backgroundColor: getSpeakerColor(idx) }}
-              />
-              <View className={styles.speakerContent}>
-                <Text className={styles.speakerLabel}>{seg.speakerLabel}</Text>
-                <Text className={styles.speakerTime}>
-                  {formatDuration(seg.startTime)} - {formatDuration(seg.endTime)}
-                </Text>
-                <Text className={styles.speakerText}>{seg.text}</Text>
-              </View>
-            </View>
-          ))}
+      {recording.status === 'processing' && (
+        <View className={styles.processingCard}>
+          <View className={styles.processingDot} />
+          <Text className={styles.processingText}>声纹分离中，请稍候...</Text>
         </View>
-      </View>
+      )}
+
+      {recording.status === 'completed' && (
+        <View className={styles.speakerSection}>
+          <Text className={styles.speakerTitle}>发言人</Text>
+          <View className={styles.speakerList}>
+            {uniqueSpeakers.map((seg, idx) => {
+              const member = getMemberForSpeaker(seg.speakerId);
+              const isEditing = editingSpeakerId === seg.speakerId;
+              return (
+                <View key={seg.speakerId} className={styles.speakerItem}>
+                  <View
+                    className={styles.speakerDot}
+                    style={{ backgroundColor: member?.color || getSpeakerColor(idx) }}
+                  />
+                  <View className={styles.speakerContent}>
+                    {isEditing ? (
+                      <View className={styles.speakerNameEdit}>
+                        <Input
+                          className={styles.speakerNameInput}
+                          value={speakerNameValue}
+                          onInput={(e) => setSpeakerNameValue(e.detail.value)}
+                          onBlur={saveSpeakerName}
+                          onConfirm={saveSpeakerName}
+                          autoFocus
+                        />
+                      </View>
+                    ) : (
+                      <Text
+                        className={styles.speakerLabel}
+                        onClick={() => handleEditSpeaker(seg.speakerId, seg.speakerLabel)}
+                      >
+                        {getSpeakerDisplayName(seg.speakerId, seg.speakerLabel)}
+                      </Text>
+                    )}
+                    <Text className={styles.speakerTime}>
+                      {formatDuration(seg.startTime)} - {formatDuration(seg.endTime)}
+                    </Text>
+                    <Text className={styles.speakerText}>{seg.text}</Text>
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        </View>
+      )}
 
       {recording.markers.length > 0 && (
         <View className={styles.timelineSection}>
@@ -100,7 +198,7 @@ const RecordDetailPage: React.FC = () => {
       )}
 
       <View className={styles.bottomBar}>
-        <View className={styles.editBtn} onClick={() => Taro.showToast({ title: '编辑功能开发中', icon: 'none' })}>
+        <View className={styles.editBtn} onClick={handleEditTitle}>
           <Text className={styles.editBtnText}>编辑信息</Text>
         </View>
         <View

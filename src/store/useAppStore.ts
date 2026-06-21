@@ -1,12 +1,42 @@
 import { create } from 'zustand';
+import Taro from '@tarojs/taro';
 import type { Recording } from '@/types/recording';
 import type { Member, NoteItem } from '@/types/member';
+
+const STORAGE_KEYS = {
+  recordings: 'app_recordings',
+  members: 'app_members',
+  notes: 'app_notes',
+  initialized: 'app_initialized',
+};
+
+const loadFromStorage = <T>(key: string): T | null => {
+  try {
+    const raw = Taro.getStorageSync(key);
+    if (raw) {
+      return JSON.parse(raw) as T;
+    }
+  } catch (e) {
+    console.error('[Store] Failed to load from storage:', key, e);
+  }
+  return null;
+};
+
+const saveToStorage = <T>(key: string, data: T): void => {
+  try {
+    Taro.setStorageSync(key, JSON.stringify(data));
+  } catch (e) {
+    console.error('[Store] Failed to save to storage:', key, e);
+  }
+};
 
 interface AppState {
   recordings: Recording[];
   members: Member[];
   notes: NoteItem[];
+  storageReady: boolean;
 
+  initFromStorage: () => void;
   setRecordings: (recordings: Recording[]) => void;
   addRecording: (recording: Recording) => void;
   updateRecording: (id: string, updates: Partial<Recording>) => void;
@@ -25,55 +55,110 @@ interface AppState {
   deleteNote: (id: string) => void;
 }
 
-export const useAppStore = create<AppState>((set) => ({
+const persistState = (state: Partial<AppState>) => {
+  if (state.recordings !== undefined) saveToStorage(STORAGE_KEYS.recordings, state.recordings);
+  if (state.members !== undefined) saveToStorage(STORAGE_KEYS.members, state.members);
+  if (state.notes !== undefined) saveToStorage(STORAGE_KEYS.notes, state.notes);
+};
+
+export const useAppStore = create<AppState>((set, get) => ({
   recordings: [],
   members: [],
   notes: [],
+  storageReady: false,
 
-  setRecordings: (recordings) => set({ recordings }),
-  addRecording: (recording) => set((state) => ({
-    recordings: [recording, ...state.recordings],
-  })),
-  updateRecording: (id, updates) => set((state) => ({
-    recordings: state.recordings.map((r) => (r.id === id ? { ...r, ...updates } : r)),
-  })),
-  deleteRecording: (id) => set((state) => ({
-    recordings: state.recordings.filter((r) => r.id !== id),
-  })),
+  initFromStorage: () => {
+    const recordings = loadFromStorage<Recording[]>(STORAGE_KEYS.recordings);
+    const members = loadFromStorage<Member[]>(STORAGE_KEYS.members);
+    const notes = loadFromStorage<NoteItem[]>(STORAGE_KEYS.notes);
+    set({
+      recordings: recordings || [],
+      members: members || [],
+      notes: notes || [],
+      storageReady: true,
+    });
+    console.info('[Store] Initialized from storage:', {
+      recordings: recordings?.length || 0,
+      members: members?.length || 0,
+      notes: notes?.length || 0,
+    });
+  },
 
-  setMembers: (members) => set({ members }),
-  addMember: (member) => set((state) => ({
-    members: [member, ...state.members],
-  })),
-  updateMember: (id, updates) => set((state) => ({
-    members: state.members.map((m) => (m.id === id ? { ...m, ...updates } : m)),
-  })),
-  deleteMember: (id) => set((state) => ({
-    members: state.members.filter((m) => m.id !== id),
-  })),
-  bindVoiceprint: (memberId, speakerId) => set((state) => ({
-    members: state.members.map((m) =>
+  setRecordings: (recordings) => {
+    set({ recordings });
+    persistState({ recordings });
+  },
+  addRecording: (recording) => set((state) => {
+    const recordings = [recording, ...state.recordings];
+    persistState({ recordings });
+    return { recordings };
+  }),
+  updateRecording: (id, updates) => set((state) => {
+    const recordings = state.recordings.map((r) => (r.id === id ? { ...r, ...updates } : r));
+    persistState({ recordings });
+    return { recordings };
+  }),
+  deleteRecording: (id) => set((state) => {
+    const recordings = state.recordings.filter((r) => r.id !== id);
+    persistState({ recordings });
+    return { recordings };
+  }),
+
+  setMembers: (members) => {
+    set({ members });
+    persistState({ members });
+  },
+  addMember: (member) => set((state) => {
+    const members = [member, ...state.members];
+    persistState({ members });
+    return { members };
+  }),
+  updateMember: (id, updates) => set((state) => {
+    const members = state.members.map((m) => (m.id === id ? { ...m, ...updates } : m));
+    persistState({ members });
+    return { members };
+  }),
+  deleteMember: (id) => set((state) => {
+    const members = state.members.filter((m) => m.id !== id);
+    persistState({ members });
+    return { members };
+  }),
+  bindVoiceprint: (memberId, speakerId) => set((state) => {
+    const members = state.members.map((m) =>
       m.id === memberId
         ? { ...m, voiceprintIds: [...m.voiceprintIds, speakerId] }
         : m
-    ),
-  })),
-  unbindVoiceprint: (memberId, speakerId) => set((state) => ({
-    members: state.members.map((m) =>
+    );
+    persistState({ members });
+    return { members };
+  }),
+  unbindVoiceprint: (memberId, speakerId) => set((state) => {
+    const members = state.members.map((m) =>
       m.id === memberId
         ? { ...m, voiceprintIds: m.voiceprintIds.filter((id) => id !== speakerId) }
         : m
-    ),
-  })),
+    );
+    persistState({ members });
+    return { members };
+  }),
 
-  setNotes: (notes) => set({ notes }),
-  addNote: (note) => set((state) => ({
-    notes: [note, ...state.notes],
-  })),
-  updateNote: (id, updates) => set((state) => ({
-    notes: state.notes.map((n) => (n.id === id ? { ...n, ...updates } : n)),
-  })),
-  deleteNote: (id) => set((state) => ({
-    notes: state.notes.filter((n) => n.id !== id),
-  })),
+  setNotes: (notes) => {
+    set({ notes });
+    persistState({ notes });
+  },
+  addNote: (note) => set((state) => {
+    const notes = [note, ...state.notes];
+    persistState({ notes });
+    return { notes };
+  }),
+  updateNote: (id, updates) => set((state) => {
+    const notes = state.notes.map((n) => (n.id === id ? { ...n, ...updates } : n));
+    persistState({ notes });
+    return { notes };
+  }),
+  deleteNote: (id) => set((state) => {
+    const notes = state.notes.filter((n) => n.id !== id);
+    persistState({ notes });
+    return { notes };
+  }),
 }));

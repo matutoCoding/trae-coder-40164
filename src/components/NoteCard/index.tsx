@@ -1,7 +1,9 @@
 import React from 'react';
 import { View, Text } from '@tarojs/components';
 import styles from './index.module.scss';
+import { useAppStore } from '@/store/useAppStore';
 import type { NoteItem } from '@/types/member';
+import type { Member } from '@/types/member';
 
 interface NoteCardProps {
   note: NoteItem;
@@ -9,8 +11,11 @@ interface NoteCardProps {
 }
 
 const NoteCard: React.FC<NoteCardProps> = ({ note, onClick }) => {
-  const displayName = note.memberName || note.speakerId;
-  const displayColor = note.memberColor || '#86909C';
+  const members = useAppStore((s) => s.members);
+
+  const member = members.find((m) => m.voiceprintIds.includes(note.speakerId));
+  const displayName = member?.name || note.memberName || note.speakerId;
+  const displayColor = member?.color || note.memberColor || '#86909C';
 
   return (
     <View className={styles.card} onClick={() => onClick?.(note)}>

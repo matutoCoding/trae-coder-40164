@@ -16,6 +16,26 @@
   font-weight: $font-weight-bold;
   color: $color-text-primary;
   display: block;
+  margin-bottom: $spacing-xs;
+}
+
+.titleEditWrap {
+  margin-bottom: $spacing-xs;
+}
+
+.titleInput {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  width: 100%;
+  padding: $spacing-xs 0;
+  border-bottom: 2rpx solid $color-primary;
+}
+
+.editHint {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  display: block;
   margin-bottom: $spacing-sm;
 }
 
@@ -40,6 +60,35 @@
 
 .playerSection {
   margin-bottom: $spacing-lg;
+}
+
+.processingCard {
+  display: flex;
+  align-items: center;
+  background: rgba($color-warning, 0.08);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+}
+
+.processingDot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: $color-warning;
+  margin-right: $spacing-sm;
+  animation: blink 1.2s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.processingText {
+  font-size: $font-size-md;
+  color: $color-warning;
+  font-weight: $font-weight-medium;
 }
 
 .speakerSection {
@@ -86,9 +135,22 @@
 .speakerLabel {
   font-size: $font-size-md;
   font-weight: $font-weight-medium;
-  color: $color-text-primary;
+  color: $color-primary;
   display: block;
   margin-bottom: 4rpx;
+}
+
+.speakerNameEdit {
+  margin-bottom: 4rpx;
+}
+
+.speakerNameInput {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-primary;
+  width: 100%;
+  padding: 4rpx 0;
+  border-bottom: 2rpx solid $color-primary;
 }
 
 .speakerTime {
