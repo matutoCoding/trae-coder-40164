@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, Input } from '@tarojs/components';
 import Taro from '@tarojs/taro';
+import classnames from 'classnames';
 import styles from './index.module.scss';
 import AudioPlayer from '@/components/AudioPlayer';
 import { useAppStore } from '@/store/useAppStore';
@@ -17,6 +18,7 @@ const RecordDetailPage: React.FC = () => {
   const [titleValue, setTitleValue] = useState('');
   const [editingSpeakerId, setEditingSpeakerId] = useState<string | null>(null);
   const [speakerNameValue, setSpeakerNameValue] = useState('');
+  const [activeSpeakerFilter, setActiveSpeakerFilter] = useState<string>('all');
 
   useEffect(() => {
     const params = Taro.getCurrentInstance().router?.params;
@@ -38,6 +40,11 @@ const RecordDetailPage: React.FC = () => {
   const getSpeakerDisplayName = (speakerId: string, speakerLabel: string): string => {
     const member = getMemberForSpeaker(speakerId);
     return member ? `${member.name}（${speakerLabel}）` : speakerLabel;
+  };
+
+  const getSpeakerShortName = (speakerId: string, speakerLabel: string): string => {
+    const member = getMemberForSpeaker(speakerId);
+    return member?.name || speakerLabel;
   };
 
   const handleEditTitle = () => {
@@ -86,6 +93,29 @@ const RecordDetailPage: React.FC = () => {
   const uniqueSpeakers = Array.from(
     new Map(recording.segments.map((s) => [s.speakerId, s])).values()
   );
+
+  const filteredSegments =
+    activeSpeakerFilter === 'all'
+      ? recording.segments
+      : recording.segments.filter((s) => s.speakerId === activeSpeakerFilter);
+
+  const filteredMarkers =
+    activeSpeakerFilter === 'all'
+      ? recording.markers
+      : recording.markers.filter((mk) => {
+          const activeSegment = recording.segments.find(
+            (s) =>
+              s.speakerId === activeSpeakerFilter &&
+              mk.timestamp >= s.startTime &&
+              mk.timestamp <= s.endTime
+          );
+          return !!activeSegment;
+        });
+
+  const handleSpeakerFilterClick = (speakerId: string) => {
+    setActiveSpeakerFilter(activeSpeakerFilter === speakerId ? 'all' : speakerId);
+    console.info('[RecordDetail] Speaker filter changed:', activeSpeakerFilter === speakerId ? 'all' : speakerId);
+  };
 
   return (
     <View className={styles.container}>
@@ -139,15 +169,72 @@ const RecordDetailPage: React.FC = () => {
       {recording.status === 'completed' && (
         <View className={styles.speakerSection}>
           <Text className={styles.speakerTitle}>发言人</Text>
+          {uniqueSpeakers.length > 1 && (
+            <ScrollView scrollX className={styles.speakerFilterList}>
+              <View
+                className={classnames(
+                  styles.speakerFilterItem,
+                  activeSpeakerFilter === 'all' && styles.speakerFilterItemActive
+                )}
+                onClick={() => handleSpeakerFilterClick('all')}
+              >
+                <Text
+                  className={classnames(
+                    styles.speakerFilterText,
+                    activeSpeakerFilter === 'all' && styles.speakerFilterTextActive
+                  )}
+                >
+                  全部
+                </Text>
+              </View>
+              {uniqueSpeakers.map((seg, idx) => {
+                const member = getMemberForSpeaker(seg.speakerId);
+                const isActive = activeSpeakerFilter === seg.speakerId;
+                return (
+                  <View
+                    key={seg.speakerId}
+                    className={classnames(
+                      styles.speakerFilterItem,
+                      isActive && styles.speakerFilterItemActive
+                    )}
+                    style={
+                      isActive
+                        ? {
+                            background: `linear-gradient(135deg, ${member?.color || getSpeakerColor(idx)}, ${member?.color || getSpeakerColor(idx)}dd)`,
+                          }
+                        : undefined
+                    }
+                    onClick={() => handleSpeakerFilterClick(seg.speakerId)}
+                  >
+                    <View
+                      className={styles.speakerFilterDot}
+                      style={{
+                        backgroundColor: member?.color || getSpeakerColor(idx),
+                      }}
+                    />
+                    <Text
+                      className={classnames(
+                        styles.speakerFilterText,
+                        isActive && styles.speakerFilterTextActive
+                      )}
+                    >
+                      {getSpeakerShortName(seg.speakerId, seg.speakerLabel)}
+                    </Text>
+                  </View>
+                );
+              })}
+            </ScrollView>
+          )}
           <View className={styles.speakerList}>
-            {uniqueSpeakers.map((seg, idx) => {
+            {filteredSegments.map((seg, idx) => {
               const member = getMemberForSpeaker(seg.speakerId);
               const isEditing = editingSpeakerId === seg.speakerId;
+              const colorIdx = uniqueSpeakers.findIndex((u) => u.speakerId === seg.speakerId);
               return (
-                <View key={seg.speakerId} className={styles.speakerItem}>
+                <View key={seg.id} className={styles.speakerItem}>
                   <View
                     className={styles.speakerDot}
-                    style={{ backgroundColor: member?.color || getSpeakerColor(idx) }}
+                    style={{ backgroundColor: member?.color || getSpeakerColor(colorIdx) }}
                   />
                   <View className={styles.speakerContent}>
                     {isEditing ? (
@@ -181,11 +268,11 @@ const RecordDetailPage: React.FC = () => {
         </View>
       )}
 
-      {recording.markers.length > 0 && (
+      {filteredMarkers.length > 0 && (
         <View className={styles.timelineSection}>
           <Text className={styles.timelineTitle}>发言标记</Text>
           <View className={styles.timeline}>
-            {recording.markers.map((mk, idx) => (
+            {filteredMarkers.map((mk, idx) => (
               <View key={mk.id} className={styles.timelineItem}>
                 <Text className={styles.timelineMarker}>🏷️</Text>
                 <Text className={styles.timelineText}>

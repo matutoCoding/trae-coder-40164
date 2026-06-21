@@ -5,6 +5,7 @@ export default defineAppConfig({
     'pages/notes/index',
     'pages/recordDetail/index',
     'pages/noteDetail/index',
+    'pages/memberDetail/index',
   ],
   window: {
     backgroundTextStyle: 'light',

@@ -95,8 +95,14 @@ export const useAppStore = create<AppState>((set, get) => ({
   }),
   updateRecording: (id, updates) => set((state) => {
     const recordings = state.recordings.map((r) => (r.id === id ? { ...r, ...updates } : r));
-    persistState({ recordings });
-    return { recordings };
+    let notes = state.notes;
+    if (updates.title) {
+      notes = state.notes.map((n) =>
+        n.recordingId === id ? { ...n, recordingTitle: updates.title! } : n
+      );
+    }
+    persistState({ recordings, notes });
+    return { recordings, notes };
   }),
   deleteRecording: (id) => set((state) => {
     const recordings = state.recordings.filter((r) => r.id !== id);

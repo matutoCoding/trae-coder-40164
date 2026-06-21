@@ -94,19 +94,8 @@ const MemberPage: React.FC = () => {
     if (selectedSpeaker) {
       handleBindMember(member);
     } else {
-      const voiceprintCount = member.voiceprintIds.length;
-      Taro.showModal({
-        title: member.name,
-        content: `角色：${member.role}\n已保存声纹：${voiceprintCount}条`,
-        showCancel: true,
-        cancelText: '删除成员',
-        confirmText: '知道了',
-        success: (res) => {
-          if (!res.confirm) {
-            useAppStore.getState().deleteMember(member.id);
-            Taro.showToast({ title: '成员已删除', icon: 'none' });
-          }
-        },
+      Taro.navigateTo({
+        url: `/pages/memberDetail/index?id=${member.id}`,
       });
     }
   };

@@ -1,0 +1,302 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 160rpx;
+}
+
+.header {
+  background: linear-gradient(135deg, $color-primary, $color-primary-light);
+  padding: $spacing-xl $page-padding;
+  padding-top: calc(#{$spacing-xl} + env(safe-area-inset-top));
+  display: flex;
+  align-items: center;
+}
+
+.avatarWrap {
+  width: 128rpx;
+  height: 128rpx;
+  border-radius: $radius-round;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: $spacing-lg;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+}
+
+.avatarText {
+  font-size: $font-size-xxl;
+  color: $color-text-white;
+  font-weight: $font-weight-bold;
+}
+
+.headerInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  display: block;
+  margin-bottom: $spacing-xs;
+}
+
+.role {
+  font-size: $font-size-md;
+  color: rgba(255, 255, 255, 0.85);
+  display: block;
+  margin-bottom: 4rpx;
+}
+
+.joinDate {
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.65);
+  display: block;
+}
+
+.content {
+  padding: 0 $page-padding;
+  padding-top: $spacing-lg;
+  height: calc(100vh - 360rpx);
+  box-sizing: border-box;
+}
+
+.section {
+  margin-bottom: $spacing-xl;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.sectionCount {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.voiceprintList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.voiceprintItem {
+  display: flex;
+  align-items: center;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+}
+
+.voiceprintDot {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  margin-right: $spacing-md;
+  flex-shrink: 0;
+}
+
+.voiceprintInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.voiceprintLabel {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  display: block;
+  margin-bottom: 4rpx;
+}
+
+.voiceprintSource {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  display: block;
+}
+
+.voiceprintNote {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  padding-left: 4rpx;
+}
+
+.emptyBlock {
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: $spacing-xl;
+  text-align: center;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+}
+
+.emptyText {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.recordingList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.recordingCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.85;
+    transform: scale(0.995);
+  }
+}
+
+.recordingTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: $spacing-sm;
+  gap: $spacing-sm;
+}
+
+.recordingTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  flex: 1;
+  min-width: 0;
+  @include text-ellipsis;
+}
+
+.recordingTag {
+  padding: 4rpx 16rpx;
+  border-radius: $radius-round;
+  flex-shrink: 0;
+}
+
+.recordingTagText {
+  font-size: $font-size-xs;
+  white-space: nowrap;
+}
+
+.recordingMeta {
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-xs;
+}
+
+.recordingMetaText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.recordingSpeaker {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  display: block;
+  margin-bottom: $spacing-md;
+}
+
+.recordingActions {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.recordingActionBtn {
+  flex: 1;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.recordingActionText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}
+
+.recordingActionBtnPrimary {
+  flex: 1;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, $color-primary, $color-primary-light);
+  border-radius: $radius-md;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.recordingActionTextPrimary {
+  font-size: $font-size-sm;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}
+
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: $spacing-md $spacing-lg;
+  padding-bottom: calc(#{$spacing-md} + env(safe-area-inset-bottom));
+  background: $color-bg-card;
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+.deleteBtn {
+  height: $button-height-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba($color-danger, 0.08);
+  border: 2rpx solid rgba($color-danger, 0.3);
+  border-radius: $radius-button;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.deleteBtnText {
+  font-size: $font-size-md;
+  color: $color-danger;
+  font-weight: $font-weight-medium;
+}

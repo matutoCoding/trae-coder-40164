@@ -244,6 +244,29 @@
   white-space: nowrap;
 }
 
+.exportBtn {
+  flex: 1;
+  height: $button-height-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba($color-primary, 0.08);
+  border: 2rpx solid rgba($color-primary, 0.3);
+  border-radius: $radius-button;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.exportBtnText {
+  font-size: $font-size-md;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}
+
 .editBtn {
   flex: 1;
   height: $button-height-md;

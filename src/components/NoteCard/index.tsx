@@ -12,10 +12,14 @@ interface NoteCardProps {
 
 const NoteCard: React.FC<NoteCardProps> = ({ note, onClick }) => {
   const members = useAppStore((s) => s.members);
+  const recordings = useAppStore((s) => s.recordings);
 
   const member = members.find((m) => m.voiceprintIds.includes(note.speakerId));
-  const displayName = member?.name || note.memberName || note.speakerId;
+  const recording = recordings.find((r) => r.id === note.recordingId);
+  const latestSpeakerLabel = recording?.segments.find((s) => s.speakerId === note.speakerId)?.speakerLabel;
+  const displayName = member?.name || latestSpeakerLabel || note.memberName || note.speakerId;
   const displayColor = member?.color || note.memberColor || '#86909C';
+  const displayRecordingTitle = recording?.title || note.recordingTitle;
 
   return (
     <View className={styles.card} onClick={() => onClick?.(note)}>
@@ -25,7 +29,7 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, onClick }) => {
         </View>
         <View className={styles.headerInfo}>
           <Text className={styles.name}>{displayName}</Text>
-          <Text className={styles.recording}>{note.recordingTitle}</Text>
+          <Text className={styles.recording}>{displayRecordingTitle}</Text>
         </View>
       </View>
       {note.viewpoints.length > 0 && (

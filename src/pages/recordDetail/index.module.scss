@@ -103,6 +103,53 @@
   display: block;
 }
 
+.speakerFilterList {
+  display: flex;
+  white-space: nowrap;
+  margin-bottom: $spacing-md;
+  @include scroll-x-container;
+}
+
+.speakerFilterItem {
+  display: inline-flex;
+  align-items: center;
+  padding: $spacing-xs $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-round;
+  margin-right: $spacing-sm;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  transition: all $transition-base;
+  white-space: nowrap;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.speakerFilterItemActive {
+  background: linear-gradient(135deg, $color-primary, $color-primary-light);
+  box-shadow: 0 4rpx 12rpx rgba($color-primary, 0.3);
+}
+
+.speakerFilterDot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  margin-right: $spacing-xs;
+  flex-shrink: 0;
+}
+
+.speakerFilterText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  white-space: nowrap;
+}
+
+.speakerFilterTextActive {
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
 .speakerList {
   display: flex;
   flex-direction: column;

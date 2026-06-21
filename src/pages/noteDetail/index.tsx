@@ -10,6 +10,7 @@ import type { Member } from '@/types/member';
 const NoteDetailPage: React.FC = () => {
   const notes = useAppStore((s) => s.notes);
   const members = useAppStore((s) => s.members);
+  const recordings = useAppStore((s) => s.recordings);
   const updateNote = useAppStore((s) => s.updateNote);
   const [note, setNote] = useState<NoteItem | null>(null);
   const [editingField, setEditingField] = useState<string | null>(null);
@@ -42,12 +43,15 @@ const NoteDetailPage: React.FC = () => {
     );
   }
 
+  const recording = recordings.find((r) => r.id === note.recordingId);
   const member = getMemberForSpeaker(note.speakerId);
-  const displayName = member?.name || note.memberName || note.speakerId;
+  const latestSpeakerLabel = recording?.segments.find((s) => s.speakerId === note.speakerId)?.speakerLabel;
+  const displayName = member?.name || latestSpeakerLabel || note.memberName || note.speakerId;
   const displayColor = member?.color || note.memberColor || '#86909C';
+  const displayRecordingTitle = recording?.title || note.recordingTitle;
 
   const handleCopy = () => {
-    let content = `${displayName} - ${note.recordingTitle}\n\n`;
+    let content = `${displayName} - ${displayRecordingTitle}\n\n`;
     if (note.viewpoints.length > 0) {
       content += '【观点】\n';
       note.viewpoints.forEach((v) => (content += `· ${v}\n`));
@@ -64,9 +68,61 @@ const NoteDetailPage: React.FC = () => {
     }
     Taro.setClipboardData({
       data: content,
-      success: () => Taro.showToast({ title: '已复制到剪贴板', icon: 'success' }),
+      success: () => Taro.showToast({ title: '已复制当前发言人', icon: 'success' }),
     });
-    console.info('[NoteDetail] Note copied');
+    console.info('[NoteDetail] Note copied:', displayName);
+  };
+
+  const handleExportAll = () => {
+    const relatedNotes = notes.filter((n) => n.recordingId === note.recordingId);
+    const rec = recordings.find((r) => r.id === note.recordingId);
+    const finalTitle = rec?.title || note.recordingTitle;
+
+    let content = `《${finalTitle}》— 会议纪要\n`;
+    content += `生成时间：${new Date().toLocaleString('zh-CN')}\n`;
+    content += `发言人：${relatedNotes.length} 人\n\n`;
+    content += '='.repeat(30) + '\n\n';
+
+    relatedNotes.forEach((n, i) => {
+      const m = members.find((mm) => mm.voiceprintIds.includes(n.speakerId));
+      const segSpeakerLabel = rec?.segments.find((s) => s.speakerId === n.speakerId)?.speakerLabel;
+      const name = m?.name || segSpeakerLabel || n.memberName || n.speakerId;
+
+      content += `【${i + 1}. ${name}】\n\n`;
+      if (n.viewpoints.length > 0) {
+        content += '· 观点\n';
+        n.viewpoints.forEach((v) => (content += `  · ${v}\n`));
+        content += '\n';
+      }
+      if (n.questions.length > 0) {
+        content += '· 问题\n';
+        n.questions.forEach((q) => (content += `  · ${q}\n`));
+        content += '\n';
+      }
+      if (n.quotes.length > 0) {
+        content += '· 引用原句\n';
+        n.quotes.forEach((q) => (content += `  "${q.text}" (${formatDuration(q.timestamp)})\n`));
+        content += '\n';
+      }
+      if (
+        n.viewpoints.length === 0 &&
+        n.questions.length === 0 &&
+        n.quotes.length === 0
+      ) {
+        content += '  暂无记录\n\n';
+      }
+      content += '-'.repeat(30) + '\n\n';
+    });
+
+    Taro.setClipboardData({
+      data: content,
+      success: () =>
+        Taro.showToast({
+          title: `已复制${relatedNotes.length}人纪要`,
+          icon: 'success',
+        }),
+    });
+    console.info('[NoteDetail] Full summary copied, total speakers:', relatedNotes.length);
   };
 
   const handleEditItem = (field: string, index: number, currentValue: string) => {
@@ -148,7 +204,7 @@ const NoteDetailPage: React.FC = () => {
         </View>
         <View className={styles.headerInfo}>
           <Text className={styles.name}>{displayName}</Text>
-          <Text className={styles.recording}>{note.recordingTitle}</Text>
+          <Text className={styles.recording}>{displayRecordingTitle}</Text>
         </View>
       </View>
 
@@ -303,7 +359,10 @@ const NoteDetailPage: React.FC = () => {
 
       <View className={styles.bottomBar}>
         <View className={styles.copyBtn} onClick={handleCopy}>
-          <Text className={styles.copyBtnText}>复制全部</Text>
+          <Text className={styles.copyBtnText}>复制当前</Text>
+        </View>
+        <View className={styles.exportBtn} onClick={handleExportAll}>
+          <Text className={styles.exportBtnText}>导出纪要</Text>
         </View>
         <View
           className={styles.editBtn}
